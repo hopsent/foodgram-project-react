@@ -139,38 +139,32 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
     For nesting purposes only.
     """
 
-    amount = serializers.ModelField(
-        model_field=IngredientAmountInRecipe()._meta.get_field('amount')
+    id = serializers.PrimaryKeyRelatedField(
+        queryset=Ingredient.objects.all(),
+        source='ingredient'
     )
-    id = serializers.ModelField(
-        model_field=Ingredient()._meta.get_field('id')
+
+    class Meta:
+        model = IngredientAmountInRecipe
+        fields = ('id', 'amount',)
+
+
+class IngredientShowSerializer(serializers.ModelSerializer):
+    """
+    Part of many-to-many relation.
+    For nesting purposes only.
+    """
+
+    id = serializers.ReadOnlyField(
+        source='ingredient.amount.id'
+    )
+    amount = serializers.ReadOnlyField(
+        source='ingredient.amount.measurement_unit'
     )
 
     class Meta:
         model = Ingredient
-        fields = ('id', 'name', 'measurement_unit', 'amount',)
-        read_only_fields = ('name', 'measurement_unit',)
-
-
-#class IngredientAmSerializer(serializers.ModelSerializer):
-
-#    id = serializers.ModelField(
-#        model_field=Ingredient()._meta.get_field('id')
-#    )
-#    name = serializers.ModelField(
-#        model_field=Ingredient()._meta.get_field('name'),
-#        read_only=True
-#    )
-#   measurement_unit = serializers.ModelField(
-#        model_field=Ingredient()._meta.get_field('measurement_unit'),
-#        read_only=True
-#    )
-
-#    class Meta:
-#        model = IngredientAmountInRecipe
-#        fields = ('id', 'name', 'measurement_unit', 'amount',)
-#        read_only_fields = ('name', 'measurement_unit',)
-
+        fields = ('id', 'amount', 'name', 'measurement_unit',)
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -179,7 +173,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     ingredients = IngredientAmountSerializer(many=True)
     image = Base64ImageField()
-#    author = UserSerializer(allow_null=True)
+    author = UserSerializer(allow_null=True, read_only=True)
 
     class Meta:
         model = Recipe
@@ -191,10 +185,44 @@ class RecipeSerializer(serializers.ModelSerializer):
             'name',
             'text',
             'cooking_time',
-        #    'author',
+            'author',
         )
-        read_only_fields = ('id',)
 
+#    def to_representation(self, instance):
+#
+#        output = {}
+#        print(dir(instance))
+#        print(instance.__dict__)
+#        for attribute_name in dir(instance):
+
+#            attribute = getattr(instance, attribute_name)
+#            if attribute_name.startswith('_'):
+#                # Ignore private attributes.
+#                pass
+#            elif hasattr(attribute, '__call__'):
+#                # Ignore methods and other callables.
+#                pass
+#            elif isinstance(attribute, (str, int, bool, float, type(None))):
+#                # Primitive types can be passed through unmodified.
+#                output[attribute_name] = attribute
+#            elif isinstance(attribute, Ingredient):
+#                # Recursively deal with items in dictionaries.
+#                output[attribute_name] = IngredientShowSerializer(attribute).data
+#            elif isinstance(attribute, Tag):
+#                # Recursively deal with items in dictionaries.
+#                output[attribute_name] = TagSerializer(attribute).data
+#            else:
+#                # Force anything else to its string representation.
+#                output[attribute_name] = str(attribute)
+
+
+#       return output
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        print('dot')
+        response['ingredients'] = IngredientShowSerializer(instance.ingredients).data
+        response['tags'] = IngredientShowSerializer(instance.tags).data
+        return response
 
     def create(self, validated_data):
         # Переопределяем метод create для реализации
@@ -205,13 +233,10 @@ class RecipeSerializer(serializers.ModelSerializer):
             author=self.context['request'].user,
             **validated_data
         )
-
         # Устанавливаем на рецепт ингредиенты и их количество.
         for dct in ingredients:
-            ingredient = get_object_or_404(
-                Ingredient,
-                id=dct.get('id')
-            )
+            ingredient = dct['ingredient']
+            #ingredient = get_object_or_404(Ingredient, id=dct.get('id'))
             IngredientAmountInRecipe.objects.get_or_create(
                 recipe=recipe,
                 ingredient=ingredient,
