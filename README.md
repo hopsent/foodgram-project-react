@@ -35,5 +35,7 @@ python3 manage.py migrate
 ```
 python3 manage.py runserver
 ```
+## Usage
+To observe the list of endpoints open ReDoc or go to localhost/api/
 ## Author
 Aleksei Kulakov
