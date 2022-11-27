@@ -9,7 +9,7 @@ urlpatterns = [
     path('api/', include('api.urls')),
 ]
 
-#Подключаем обработку картинок в режиме отладки на период разработки.
+# Подключаем обработку картинок в режиме отладки на период разработки.
 if settings.DEBUG:
     urlpatterns += static(
         settings.MEDIA_URL,
