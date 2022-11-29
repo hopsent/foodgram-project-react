@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 
+from .validators import validate_is_hex, validate_max_size_text
+
 
 User = get_user_model()
 
@@ -36,7 +38,13 @@ class Tag(models.Model):
         unique=True,
         verbose_name='Название тега'
     )
-    color = models.CharField(max_length=15, unique=True, verbose_name='Цвет')
+    color = models.CharField(
+        max_length=7,
+        validators=[validate_is_hex],
+        default='#ffffff',
+        unique=True,
+        verbose_name='Цвет'
+    )
     slug = models.SlugField(unique=True)
 
     class Meta:
@@ -70,7 +78,9 @@ class Recipe(models.Model):
         max_length=200,
         verbose_name='Название рецепта'
     )
-    text = models.TextField(verbose_name='Описание')
+    text = models.TextField(
+        validators=[validate_max_size_text],
+        verbose_name='Описание')
     cooking_time = models.IntegerField(
         validators=[MinValueValidator(1)],
         verbose_name='Время приготовления (в минутах)'
@@ -180,7 +190,7 @@ class ShoppingCart(models.Model):
     recipe = models.ManyToManyField(
         Recipe,
         related_name='recipes',
-        verbose_name='Рецепт'
+        verbose_name='Рецепты'
     )
 
     class Meta:

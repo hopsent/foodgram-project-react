@@ -136,8 +136,4 @@ backend/media/
 
 frontend/
 
-infra/docker-compose.yml
-
-Dockerfile
-
 package-lock.json

@@ -2,26 +2,6 @@ import base64
 
 from django.core.files.base import ContentFile
 from rest_framework import serializers
-import webcolors
-
-
-class Hex2NameColor(serializers.Field):
-    """
-    To customize field 'color', which is used by
-    serializer related to :model:'recipes.Tag'.
-    """
-
-    def to_representation(self, value):
-        return value
-
-    def to_internal_value(self, data):
-        try:
-            data = webcolors.hex_to_name(data)
-        except ValueError:
-            raise serializers.ValidationError(
-                'Для этого цвета нет имени.'
-            )
-        return data
 
 
 class Base64ImageField(serializers.ImageField):

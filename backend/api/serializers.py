@@ -12,7 +12,7 @@ from recipes.models import (
     IngredientAmountInRecipe,
     ShoppingCart,
 )
-from .fields import Hex2NameColor, Base64ImageField
+from .fields import Base64ImageField
 
 
 User = get_user_model()
@@ -113,8 +113,6 @@ class TagSerializer(serializers.ModelSerializer):
     """
     Serializer related to :model:'recipes.Tag'.
     """
-
-    color = Hex2NameColor()
 
     class Meta:
         model = Tag
