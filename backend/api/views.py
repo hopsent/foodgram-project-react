@@ -274,12 +274,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 context={'request': request}
             )
             return Response(serializer.data)
-        elif self.request.method == 'DELETE':
+        elif self.request.method == 'DELETE':  # В стр. 277 не else - elif
             if not query.exists():
                 raise ValidationError(f'{recipe} отсутствует в избранном.')
             Favorite.objects.get(user=user, recipe=recipe).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(
+        return Response(  # else - в стр. 282 с return status.400
             {'': f'{self.request.method}'},
             status=status.HTTP_400_BAD_REQUEST
         )
