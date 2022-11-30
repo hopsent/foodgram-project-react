@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -34,11 +33,8 @@ from .permissions import (
     IsAuthorOrReadOnly,
     IsAuthenticatedOrOwner,
 )
-from users.models import Subscription
+from users.models import Subscription, User
 from recipes.models import Ingredient, Tag, Recipe, ShoppingCart, Favorite
-
-
-User = get_user_model()
 
 
 class CreateRetrieveListViewSet(mixins.CreateModelMixin,
@@ -68,21 +64,7 @@ class UserViewSet(CreateRetrieveListViewSet):
         # Создаем юзера, хешируем пароль.
         serializer = UserSignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        attrs = serializer.data
-        initial_data = {
-            'username': attrs['username'],
-            'email': attrs['email'],
-            'first_name': attrs['first_name'],
-            'last_name': attrs['last_name'],
-        }
-        user = User(**initial_data)
-        user.set_password(serializer.data.get('password'))
-        user.save()
-
-        # Возвращаем поле 'id' в сериализацию.
-        instance = get_object_or_404(User, username=user.username)
-        serializer = UserSignUpSerializer(instance)
-
+        serializer.save()
         return Response(serializer.data)
 
     @action(detail=False, permission_classes=(IsAuthenticated,))

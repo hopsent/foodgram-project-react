@@ -36,13 +36,13 @@ class Tag(models.Model):
     hex-format for correct serialization.
     """
 
-    name = models.CharField(
-        max_length=20,
+    name = models.TextField(
+        validators=[validate_max_size_text],
         unique=True,
         verbose_name='Название тега'
     )
-    color = models.CharField(
-        max_length=7,
+
+    color = models.TextField(
         validators=[validate_is_hex],
         default='#ffffff',
         unique=True,
@@ -77,8 +77,8 @@ class Recipe(models.Model):
         upload_to='recipes/images/',
         verbose_name='Загрузить фото'
     )
-    name = models.CharField(
-        max_length=200,
+    name = models.TextField(
+        validators=[validate_max_size_text],
         verbose_name='Название рецепта'
     )
     text = models.TextField(

@@ -1,4 +1,3 @@
-from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -13,9 +12,7 @@ from recipes.models import (
     ShoppingCart,
 )
 from .fields import Base64ImageField
-
-
-User = get_user_model()
+from users.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -51,6 +48,8 @@ class UserSignUpSerializer(serializers.ModelSerializer):
     and to exclude 'is_subscribe'-field from the Response.
     """
 
+    password = serializers.CharField(write_only=True)
+
     class Meta:
         model = User
         fields = (
@@ -63,6 +62,9 @@ class UserSignUpSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('id',)
         extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data)
 
 
 class ChangePasswordSerializer(serializers.Serializer):

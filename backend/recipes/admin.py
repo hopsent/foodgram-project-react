@@ -13,7 +13,7 @@ class IngredientRecipeInLine(admin.TabularInline):
     """
 
     model = IngredientAmountInRecipe
-    raw_id_fields = ['ingredient',]
+    raw_id_fields = ['ingredient', ]
     min_num = 1
 
 
