@@ -11,7 +11,6 @@ from recipes.models import (
     IngredientAmountInRecipe,
     ShoppingCart,
 )
-
 from .fields import Base64ImageField
 from users.models import User
 

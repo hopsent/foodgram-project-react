@@ -41,6 +41,7 @@ class Tag(models.Model):
         unique=True,
         verbose_name='Название тега'
     )
+
     color = models.TextField(
         validators=[validate_is_hex],
         default='#ffffff',
