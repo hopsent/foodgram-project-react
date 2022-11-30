@@ -13,9 +13,12 @@ class Ingredient(models.Model):
     The model to manage ingredients.
     """
 
-    name = models.CharField(max_length=50, verbose_name='Название')
-    measurement_unit = models.CharField(
-        max_length=16,
+    name = models.TextField(
+        validators=[validate_max_size_text],
+        verbose_name='Название'
+    )
+    measurement_unit = models.TextField(
+        validators=[validate_max_size_text],
         verbose_name='Единица измерения'
     )
 

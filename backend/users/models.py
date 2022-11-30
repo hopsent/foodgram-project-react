@@ -5,9 +5,12 @@ from django.db import models
 class User(AbstractUser):
     """Customize :model:'users.User'."""
 
-    email = models.EmailField(blank=False)
+    email = models.EmailField(blank=False, unique=True)
     first_name = models.CharField(max_length=150, blank=False)
     last_name = models.CharField(max_length=150, blank=False)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name', ]
 
     class Meta:
         ordering = ('-id',)
