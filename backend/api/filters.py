@@ -60,7 +60,7 @@ class IsInShoppingCartFilterBackend(filters.BaseFilterBackend):
             raise ValidationError(
                 'Чтобы вывести список покупок'
                 ' параметр "is_in_shopping_cart" должен равняться 1.'
-
+            )
         elif int(is_in_shopping_cart) == 1:
             return queryset.filter(recipes__user=request.user)
 
