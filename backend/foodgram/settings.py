@@ -6,9 +6,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.getenv('SECRET_KEY', default='*')
 
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['hopsent.hopto.org', '51.250.81.65', ]
 
 
 INSTALLED_APPS = [
@@ -61,8 +61,12 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'DB_ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
+        'DB_NAME': os.getenv('DB_NAME', default='postgres'),
+        'DB_USER': os.getenv('DB_USER', default='postgres'),
+        'DB_PASSWORD': os.getenv('DB_PASSWORD', default='postgres'),
+        'DB_HOST': os.getenv('DB_HOST', default='db'),
+        'DB_PORT': os.getenv('DB_PORT', default=5432),
     }
 }
 
