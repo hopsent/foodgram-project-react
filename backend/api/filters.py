@@ -36,7 +36,7 @@ class IsFavouritedFilterBackend(filters.BaseFilterBackend):
             raise ValidationError(
                 'Чтобы вывести список избранных рецептов'
                 ' параметр "is_favorited" должен равняться 1.'
-
+            )
         elif int(is_favorited) == 1:
             return queryset.filter(favourite__user=request.user)
 
