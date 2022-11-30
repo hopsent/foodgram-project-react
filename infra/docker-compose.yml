@@ -5,7 +5,7 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data/
     env_file:
-      - ../backend/foodgram/.env
+      - ./.env
   backend:
     image: hopsent/foodgram:v1
     restart: always
@@ -15,7 +15,7 @@ services:
     depends_on:
       - db
     env_file:
-      - ../backend/foodgram/.env
+      - ./.env
   frontend:
     build:
       context: ../frontend
