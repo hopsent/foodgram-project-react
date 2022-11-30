@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -34,11 +34,8 @@ from .permissions import (
     IsAuthorOrReadOnly,
     IsAuthenticatedOrOwner,
 )
-from users.models import Subscription
+from users.models import Subscription, User
 from recipes.models import Ingredient, Tag, Recipe, ShoppingCart, Favorite
-
-
-User = get_user_model()
 
 
 class CreateRetrieveListViewSet(mixins.CreateModelMixin,
@@ -68,21 +65,7 @@ class UserViewSet(CreateRetrieveListViewSet):
         # Создаем юзера, хешируем пароль.
         serializer = UserSignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        attrs = serializer.data
-        initial_data = {
-            'username': attrs['username'],
-            'email': attrs['email'],
-            'first_name': attrs['first_name'],
-            'last_name': attrs['last_name'],
-        }
-        user = User(**initial_data)
-        user.set_password(serializer.data.get('password'))
-        user.save()
-
-        # Возвращаем поле 'id' в сериализацию.
-        instance = get_object_or_404(User, username=user.username)
-        serializer = UserSignUpSerializer(instance)
-
+        serializer.save()
         return Response(serializer.data)
 
     @action(detail=False, permission_classes=(IsAuthenticated,))
@@ -274,12 +257,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 context={'request': request}
             )
             return Response(serializer.data)
-        elif self.request.method == 'DELETE':
+        elif self.request.method == 'DELETE':  # В стр. 277 не else - elif
             if not query.exists():
                 raise ValidationError(f'{recipe} отсутствует в избранном.')
             Favorite.objects.get(user=user, recipe=recipe).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(
+        return Response(  # else - в стр. 282 с return status.400
             {'': f'{self.request.method}'},
             status=status.HTTP_400_BAD_REQUEST
         )

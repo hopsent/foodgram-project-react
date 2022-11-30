@@ -1,6 +1,9 @@
 # Здесь приводятся фильтры queryset Recipe.objects.all()
 # по query_params. Наследуем от BaseFilterBackend.
 from rest_framework import filters
+from rest_framework.exceptions import ValidationError
+
+from recipes.models import Tag
 
 
 class SpecificAuthorFilterBackend(filters.BaseFilterBackend):
@@ -11,15 +14,11 @@ class SpecificAuthorFilterBackend(filters.BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view):
         author = request.query_params.get('author')
-        if author is None:
-            return queryset
-        try:
-            return queryset.filter(author=int(author))
-        except Exception:
+        if not queryset.filter(author=int(author)).exists():
             raise Exception(
-                'Введите корректное значение параметра запроса'
-                ' author - число.'
+                'Введите корректный id автора.'
             )
+        return queryset.filter(author=int(author))
 
 
 class IsFavouritedFilterBackend(filters.BaseFilterBackend):
@@ -32,16 +31,13 @@ class IsFavouritedFilterBackend(filters.BaseFilterBackend):
         is_favorited = request.query_params.get('is_favorited')
         if request.user.is_anonymous or is_favorited is None:
             return queryset
-        try:
-            if int(is_favorited) == 1:
-                return queryset.filter(
-                    favourite__user=request.user
-                )
-        except Exception:
-            raise Exception(
-                'Введите корректное значение параметра запроса'
-                ' is_favorite - число.'
+        elif (not isinstance(is_favorited, int) or int(is_favorited) != 1):
+            raise ValidationError(
+                'Чтобы вывести список избранных рецептов'
+                ' параметр "is_favorited" должен равняться 1.'
             )
+        elif int(is_favorited) == 1:
+            return queryset.filter(favourite__user=request.user)
 
 
 class IsInShoppingCartFilterBackend(filters.BaseFilterBackend):
@@ -56,16 +52,16 @@ class IsInShoppingCartFilterBackend(filters.BaseFilterBackend):
         )
         if is_in_shopping_cart is None or request.user.is_anonymous:
             return queryset
-        try:
-            if int(is_in_shopping_cart) == 1:
-                return queryset.filter(
-                    recipes__user=request.user
-                )
-        except Exception:
-            raise Exception(
-                'Введите корректное значение параметра запроса'
-                ' is_in_shopping_cart - число.'
+        elif (
+            not isinstance(is_in_shopping_cart, int)
+            or int(is_in_shopping_cart) != 1
+        ):
+            raise ValidationError(
+                'Чтобы вывести список покупок'
+                ' параметр "is_in_shopping_cart" должен равняться 1.'
             )
+        elif int(is_in_shopping_cart) == 1:
+            return queryset.filter(recipes__user=request.user)
 
 
 class TagsFilterBackend(filters.BaseFilterBackend):
@@ -76,13 +72,8 @@ class TagsFilterBackend(filters.BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view):
         tags = request.query_params.get('tags')
-        if tags is None:
-            return queryset
-        try:
-            return queryset.filter(tags__slug=tags)
-        except Exception:
+        if not Tag.objects.filter(slug=tags).exists():
             raise Exception(
-                'Введите корректное значение параметра'
-                ' запроса tags - должно быть значение поля slug'
-                ' у объекта модели Tag.'
+                'Введите корректный slug тега.'
             )
+        return queryset.filter(tags__slug=tags)
