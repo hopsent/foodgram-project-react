@@ -308,27 +308,23 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def download_shopping_cart(self, request):
 
         user = request.user
-        try:
-            shopping_recipes = Recipe.objects.filter(
-                recipes__user=user
-            )
-            ingredients = shopping_recipes.values_list(
-                'amount__ingredient__name',
-                'amount__ingredient__measurement_unit'
-            ).order_by('amount__ingredient__name')
-            total = ingredients.annotate(
-                amount=Sum('amount__amount')
-            )
 
-            shopping_cart = 'Список покупок:'
-            for ingr in total:
-                shopping_cart += f'\n{ingr[0]}: {ingr[2]} {ingr[1]}'
-            f_name = 'shopping_cart.txt'
-            response = HttpResponse(
-                shopping_cart,
-                content_type='text/plain'
-            )
-            response['Content-Disposition'] = f'attachment; filename={f_name}'
-            return response
-        except Exception:
-            raise Exception('Список покупок пуст.')
+        shopping_recipes = Recipe.objects.filter(
+            recipes__user=user
+        )
+        ingredients = shopping_recipes.values_list(
+            'amount__ingredient__name',
+            'amount__ingredient__measurement_unit'
+        ).order_by('amount__ingredient__name')
+        total = ingredients.annotate(
+            amount=Sum('amount__amount')
+        )
+
+        shopping_cart = 'Список покупок:'
+        for ingr in total:
+            shopping_cart += f'\n{ingr[0]}: {ingr[2]} {ingr[1]}'
+
+        return HttpResponse(
+            shopping_cart,
+            content_type='text/plain'
+        )
