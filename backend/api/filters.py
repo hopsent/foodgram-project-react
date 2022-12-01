@@ -69,7 +69,7 @@ class TagsFilterBackend(filters.BaseFilterBackend):
         tags = request.GET.getlist('tags')
         if tags is None:
             return queryset
-        return queryset.filter(tags__slug__in=tags)
+        return queryset.filter(tags__slug__in=tags).distinct()
 
 
 class IngredientNameFilter(filters.BaseFilterBackend):
