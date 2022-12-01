@@ -15,6 +15,7 @@ from .filters import (
     IsFavouritedFilterBackend,
     IsInShoppingCartFilterBackend,
     TagsFilterBackend,
+    IngredientNameFilter,
 )
 from .serializers import (
     UserSerializer,
@@ -208,8 +209,8 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (AllowAny,)
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('^name',)
+    filter_backends = (IngredientNameFilter,)
+    filterset_fields = ('name',)
     pagination_class = None
 
 
