@@ -66,10 +66,10 @@ class TagsFilterBackend(filters.BaseFilterBackend):
     """
 
     def filter_queryset(self, request, queryset, view):
-        tags = request.query_params.get('tags')
+        tags = request.GET.getlist('tags')
         if tags is None:
             return queryset
-        return queryset.filter(tags__slug=tags)
+        return queryset.filter(tags__slug__in=tags)
 
 
 class IngredientNameFilter(filters.BaseFilterBackend):
