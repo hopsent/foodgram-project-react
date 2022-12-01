@@ -124,11 +124,12 @@ class UserViewSet(CreateRetrieveListViewSet):
             )
             return Response(serializer.data)
 
-        elif self.request.method == 'DELETE':
+        if self.request.method == 'DELETE':
             if not subscription.exists():
                 raise ValidationError(f'Подписки на {author} не существует.')
             Subscription.objects.get(user=user, author=author).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
+
         return Response(
             {'': f'{self.request.method}'},
             status=status.HTTP_400_BAD_REQUEST
@@ -256,12 +257,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 context={'request': request}
             )
             return Response(serializer.data)
-        elif self.request.method == 'DELETE':  # В стр. 277 не else - elif
+
+        if self.request.method == 'DELETE':
             if not query.exists():
                 raise ValidationError(f'{recipe} отсутствует в избранном.')
             Favorite.objects.get(user=user, recipe=recipe).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(  # else - в стр. 282 с return status.400
+        return Response(
             {'': f'{self.request.method}'},
             status=status.HTTP_400_BAD_REQUEST
         )
@@ -287,7 +289,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 context={'request': request}
             )
             return Response(serializer.data)
-        elif self.request.method == 'DELETE':
+
+        if self.request.method == 'DELETE':
             if not query.exists():
                 raise ValidationError(
                     f'{recipe} отсутствует в Вашем списке покупок.'
@@ -319,9 +322,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
             shopping_cart = 'Список покупок:'
             for ingr in total:
                 shopping_cart += f'\n{ingr[0]}: {ingr[2]} {ingr[1]}'
-            return HttpResponse(
+            f_name = 'shopping_cart.txt'
+            response = HttpResponse(
                 shopping_cart,
                 content_type='text/plain'
             )
+            response['Content-Disposition'] = f'attachment; filename={f_name}'
+            return response
         except Exception:
             raise Exception('Список покупок пуст.')

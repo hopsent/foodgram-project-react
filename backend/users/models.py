@@ -5,7 +5,6 @@ from django.db import models
 class User(AbstractUser):
     """Customize :model:'users.User'."""
 
-
     email = models.EmailField(unique=True)
 
     USERNAME_FIELD = 'email'

@@ -7,7 +7,7 @@ def validate_is_hex(value):
     """To check if value looks like hex-code."""
     v_len = len(value)
     if v_len != 7 or not re.match(
-        '^\#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$',  # noqa: W605
+        r'^\#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$',
         value
     ):
         raise ValidationError(
