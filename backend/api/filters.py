@@ -66,10 +66,10 @@ class TagsFilterBackend(filters.BaseFilterBackend):
     """
 
     def filter_queryset(self, request, queryset, view):
-        tags = request.GET.getlist('tags')
-        if tags is None:
-            return queryset
-        return queryset.filter(tags__slug__in=tags).distinct()
+        if view.detail is False:
+            tags = request.GET.getlist('tags')
+            return queryset.filter(tags__slug__in=tags).distinct()
+        return queryset
 
 
 class IngredientNameFilter(filters.BaseFilterBackend):
