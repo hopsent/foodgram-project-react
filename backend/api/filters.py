@@ -66,13 +66,20 @@ class TagsFilterBackend(filters.BaseFilterBackend):
     """
 
     def filter_queryset(self, request, queryset, view):
+        tags = request.query_params.getlist('tags')
+
+        if not tags:
+            return queryset
         if view.detail is False:
-            tags = request.GET.getlist('tags')
             return queryset.filter(tags__slug__in=tags).distinct()
         return queryset
 
 
 class IngredientNameFilter(filters.BaseFilterBackend):
+    """
+    To search through 'name' field related to
+    :model:'recipes.Ingredients'.
+    """
 
     def filter_queryset(self, request, queryset, view):
         name = request.query_params.get('name').lower()

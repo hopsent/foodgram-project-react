@@ -203,7 +203,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         if user.is_anonymous:
             return False
-        return ShoppingCart.objects.filter(user=user, recipe=obj).exists()
+        return obj.recipes.filter(user=user).exists()
 
     def to_representation(self, instance):
         # Переопределяем, чтобы презентовать поля ManyToMany,
