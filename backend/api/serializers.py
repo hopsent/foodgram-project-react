@@ -160,6 +160,7 @@ class IngredientShowSerializer(serializers.ModelSerializer):
     measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit'
     )
+    id = serializers.ReadOnlyField(source='ingredient.id')
 
     class Meta:
         model = IngredientAmountInRecipe
@@ -260,6 +261,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
+        instance.ingredients.clear()
 
         lst_of_ingr = []
         for dct in ingredients:
@@ -271,10 +273,7 @@ class RecipeSerializer(serializers.ModelSerializer):
                     amount=dct.get('amount')
                 )
             )
-        IngredientAmountInRecipe.objects.bulk_update(
-            instance.ingredients,
-            lst_of_ingr
-        )
+        IngredientAmountInRecipe.objects.bulk_create(lst_of_ingr)
 
         list_of_tags = []
         for tag in tags:
