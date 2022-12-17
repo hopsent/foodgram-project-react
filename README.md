@@ -1,9 +1,5 @@
 # foodgram
-АДМИН ЗОНА:
-admin@mail.ru
-password
-## foodgram-project-react
-foodgram's service to exchange recipes and download a copy of shopping cart.
+foodgram is service to exchange recipes and download a copy of shopping cart.
 ## Tech
 Python 3.8.10
 Django 2.2.16
