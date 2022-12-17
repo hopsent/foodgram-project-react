@@ -3,6 +3,8 @@ foodgram is service to exchange recipes and download a copy of shopping cart.
 ## Tech
 Python 3.8.10
 Django 2.2.16
+Django REST Framework
+Docker
 ## Installation
 - use this shell command to clone repository to your local computer:
 ```
