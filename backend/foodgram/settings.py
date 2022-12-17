@@ -13,7 +13,6 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['hopsent.hopto.org', '51.250.81.65', ]
 
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
